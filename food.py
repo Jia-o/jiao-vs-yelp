@@ -14,6 +14,7 @@ cur.execute("""
     )
 """)
 
+# R - READ #
 def auto_update_report():
     rows = cur.execute("""
         SELECT id, name, cuisine, my_rating, public_rating, 
@@ -47,7 +48,7 @@ def auto_update_report():
         </style>
     </head>
     <body>
-        <h2>Restaurant Ratings</h2>
+        <h2>Jiao vs. The Court of Public Opinion</h2>
         <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search...">
         <table id="resTable">
             <thead>
@@ -108,7 +109,7 @@ def auto_update_report():
 
     with open("display.html", "w") as f:
         f.write(html_content)
-    print("✅ display.html updated with ID and improved sorting.")
+    print("Display has been updated")
 
 
 def list_restaurants():
@@ -118,11 +119,8 @@ def list_restaurants():
         print(f"ID {r[0]}: {r[1]} | {r[2]} | Mine: {r[3]} | Public: {r[4]}")
 
 def get_valid_rating(prompt, default=None):
-    """Helper to ensure ratings are between 1 and 5."""
     while True:
         value = input(prompt)
-        
-        # Handle the update scenario where user might press enter for the default
         if default is not None and value == "":
             return default
             
@@ -131,10 +129,11 @@ def get_valid_rating(prompt, default=None):
             if 1.0 <= val <= 5.0:
                 return val
             else:
-                print("⚠️ Rating must be between 1.0 and 5.0.")
+                print("Rating must be between 1 and 5")
         except ValueError:
-            print("⚠️ Invalid input. Please enter a number.")
+            print("Dawg what are you doing please enter a number")
 
+# C - CREATE #
 def add_restaurant():
     name = input("Name: ")
     cuisine = input("Cuisine: ")
@@ -145,24 +144,23 @@ def add_restaurant():
                 (name, cuisine, my_r, pub_r))
     con.commit()
     auto_update_report()
-    print("✅ Restaurant added.")
+    print(f"{name} was added")
 
+# U - UPDATE #
 def update_restaurant():
     list_restaurants()
     target_id = input("\nEnter the ID of the restaurant to update: ")
     
     restaurant = cur.execute("SELECT name, cuisine, my_rating, public_rating FROM restaurants WHERE id = ?", (target_id,)).fetchone()
-    
     if not restaurant:
-        print("❌ ID not found.")
+        print("ID not found.")
         return
 
     print("(Leave blank to keep existing value)")
     new_name = input(f"New Name [{restaurant[0]}]: ") or restaurant[0]
     new_cuisine = input(f"New Cuisine [{restaurant[1]}]: ") or restaurant[1]
     
-    # Use the helper for ratings with defaults
-    new_my = get_valid_rating(f"New My Rating [{restaurant[2]}]: ", default=restaurant[2])
+    new_my = get_valid_rating(f"New Personal Rating [{restaurant[2]}]: ", default=restaurant[2])
     new_pub = get_valid_rating(f"New Public Rating [{restaurant[3]}]: ", default=restaurant[3])
     
     cur.execute("""
@@ -173,33 +171,26 @@ def update_restaurant():
     
     con.commit()
     auto_update_report()
-    print("✅ Update successful.")
+    print(f"{restaurant} was updated")
 
+# D - DELETE #
 def delete_restaurant():
     list_restaurants()
     target_id = input("\nEnter the ID to DELETE: ")
-    
-    # Delete the target
     cur.execute("DELETE FROM restaurants WHERE id = ?", (target_id,))
-    
-    # Shift IDs down for all entries with an ID greater than the one deleted
     cur.execute("UPDATE restaurants SET id = id - 1 WHERE id > ?", (target_id,))
-    
-    # Reset the sqlite sequence so new entries don't conflict
     cur.execute("UPDATE sqlite_sequence SET seq = (SELECT MAX(id) FROM restaurants) WHERE name='restaurants'")
-    
     con.commit()
     auto_update_report()
-    print(f"✅ Entry {target_id} removed and IDs re-indexed.")
+    print(f"{target_id} was removed")
 
 # MAIN MENU
 while True:
-    print("\nWhat would you like to do?")
-    print("1. Add a new restaurant")
-    print("2. Update an existing restaurant")
-    print("3. Delete a restaurant")
+    print("\nHeyy, what would you like to do?")
+    print("1. Add new restaurant")
+    print("2. Update existing restaurant")
+    print("3. Delete restaurant")
     print("4. Exit")
-    
     choice = input("Select an option (1-4): ")
     
     if choice == "1": add_restaurant()
