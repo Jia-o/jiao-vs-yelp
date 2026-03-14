@@ -6,7 +6,7 @@ I'm using it as a scientific way to prove or disprove my friends' claims that I 
 
 
 ## database schema + CRUD operations
-Each entry has a id, restaurant name, cuisine type, my personal rating, and the public rating. 
+Each entry has a id, restaurant name (string), cuisine type (string), my personal rating (float), and the public rating (float). 
 - Create: you can add a new entry 
 - Read: the current data is displayed in an HTML file that can be searched and sorted
 - Update: you can update the values of an existing entry without making a new one
