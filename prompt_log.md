@@ -8,4 +8,4 @@
 - make the following sanity checks
     - if a rating below 1 or above 5 is entered dont allow it
     - if a new restaurant is added with the exact same name as an existing one dont allow it just direct the user to the update option
-- 
+- change the html to fit this colour palette (+ uploaded photo)
